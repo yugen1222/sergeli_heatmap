@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Тепловая карта</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f6f9;
+  color:#111827;
+}
+
+.header{
+  background:#07111f;
+  color:white;
+  padding:18px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.header button{
+  background:#1f2937;
+  color:white;
+  border:1px solid #374151;
+  padding:10px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.container{
+  max-width:850px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+.notification{
+  background:#fee2e2;
+  border:3px solid #dc2626;
+  color:#7f1d1d;
+  padding:18px;
+  border-radius:14px;
+  margin-bottom:18px;
+  font-weight:bold;
+  font-size:19px;
+  animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 0 rgba(220,38,38,.4)}
+  50%{box-shadow:0 0 20px rgba(220,38,38,.8)}
+  100%{box-shadow:0 0 0 rgba(220,38,38,.4)}
+}
+
+.floor{
+  min-height:210px;
+  border-radius:14px;
+  margin-bottom:16px;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  gap:35px;
+  color:white;
+  box-shadow:0 8px 18px rgba(0,0,0,.12);
+}
+
+.red{
+  background:#ff1f1f;
+  animation:redBlink 1s infinite;
+}
+
+@keyframes redBlink{
+  0%{filter:brightness(1)}
+  50%{filter:brightness(1.25)}
+  100%{filter:brightness(1)}
+}
+
+.yellow{background:#ffe100;color:#111827}
+.green{background:#55bd42}
+
+.counter{width:140px}
+
+.box{
+  border:3px solid white;
+  border-radius:7px;
+  text-align:center;
+  padding:12px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:rgba(255,255,255,.15);
+}
+
+.box:hover{transform:scale(1.03)}
+
+.label{
+  font-weight:bold;
+  font-size:15px;
+}
+
+.num{
+  font-size:42px;
+  font-weight:bold;
+  margin-top:6px;
+}
+
+.info{
+  flex:1;
+  text-align:center;
+  font-weight:bold;
+}
+
+.info h2{
+  font-size:34px;
+  margin:0 0 22px;
+}
+
+.info p{font-size:23px}
+
+.note{
+  background:#e8f1ff;
+  color:#2563eb;
+  padding:15px;
+  border-radius:10px;
+  margin-top:20px;
+  font-weight:bold;
+}
+
+.admin-card{
+  background:white;
+  border-radius:16px;
+  padding:25px;
+  margin-bottom:18px;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+}
+
+.admin-card h2{
+  margin-top:0;
+  color:#2563eb;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  border-left:6px solid #ddd;
+  padding:15px;
+  margin:12px 0;
+  background:#f9fafb;
+  border-radius:10px;
+}
+
+.row.red-line{border-left-color:#ef4444}
+.row.yellow-line{border-left-color:#eab308}
+.row.green-line{border-left-color:#22c55e}
+
+input,select{
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  font-size:17px;
+  width:130px;
+}
+
+.save{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:12px 22px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.hidden{display:none}
+
+@media(max-width:650px){
+  .floor{
+    gap:15px;
+    padding:14px;
+  }
+  .counter{width:110px}
+  .info h2{font-size:26px}
+  .info p{font-size:18px}
+  .num{font-size:34px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div id="pageTitle">🔥 Тепловая карта</div>
+  <button onclick="togglePage()" id="toggleBtn">⚙️ Админ</button>
+</div>
+
+<div class="container">
+
+  <div id="mainPage">
+    <div id="notification" class="notification hidden"></div>
+    <div id="floors"></div>
+
+    <div class="note">
+      ℹ️ Нажмите на количество сотрудников или гостей, чтобы изменить данные.
+    </div>
+  </div>
+
+  <div id="adminPage" class="hidden">
+
+    <div class="admin-card">
+      <h2>Нормы загрузки</h2>
+      <p>Норма = сколько гостей может обслуживать 1 сотрудник.</p>
+
+      <div class="row red-line">
+        <b>1 этаж</b>
+        <input type="number" id="norm1">
+      </div>
+
+      <div class="row yellow-line">
+        <b>2 этаж</b>
+        <input type="number" id="norm2">
+      </div>
+
+      <div class="row green-line">
+        <b>3 этаж</b>
+        <input type="number" id="norm3">
+      </div>
+
+      <button class="save" onclick="saveNorms()">Сохранить нормы</button>
+    </div>
+
+    <div class="admin-card">
+      <h2>Пороговые значения</h2>
+
+      <div class="row yellow-line">
+        <div>
+          <b>Высокая нагрузка</b><br>
+          <small>Нагрузка больше нормы на</small>
+        </div>
+        <input type="number" id="yellowLimit">
+      </div>
+
+      <div class="row red-line">
+        <div>
+          <b>Критичная нагрузка</b><br>
+          <small>Нагрузка больше нормы на</small>
+        </div>
+        <input type="number" id="redLimit">
+      </div>
+
+      <button class="save" onclick="saveLimits()">Сохранить пороги</button>
+    </div>
+
+    <div class="admin-card">
+      <h2>Уведомления</h2>
+
+      <div class="row">
+        <b>Push-уведомления</b>
+        <select id="alerts">
+          <option>Включено</option>
+          <option>Выключено</option>
+        </select>
+      </div>
+
+      <button class="save" onclick="requestNotificationPermission()">Разрешить уведомления</button>
+      <br><br>
+      <button class="save" onclick="saveGeneral()">Сохранить настройки</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+let settings = JSON.parse(localStorage.getItem("settings")) || {
+  yellowLimit: 1,
+  redLimit: 2,
+  alerts: "Включено"
+};
+
+let floors = JSON.parse(localStorage.getItem("floors")) || {
+  1:{staff:4, guests:30, norm:5},
+  2:{staff:5, guests:20, norm:4},
+  3:{staff:6, guests:18, norm:6}
+};
+
+let currentPage = "main";
+let lastAlertText = "";
+
+function saveAll(){
+  localStorage.setItem("floors", JSON.stringify(floors));
+  localStorage.setItem("settings", JSON.stringify(settings));
+}
+
+async function registerServiceWorker(){
+  if("serviceWorker" in navigator){
+    await navigator.serviceWorker.register("sw.js");
+  }
+}
+
+async function requestNotificationPermission(){
+  if(!("Notification" in window)){
+    alert("Ваш браузер не поддерживает уведомления");
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+
+  if(permission === "granted"){
+    alert("Уведомления разрешены");
+  }else{
+    alert("Уведомления не разрешены");
+  }
+}
+
+function sendPushNotification(title, body){
+  if(settings.alerts === "Выключено") return;
+  if(!("Notification" in window)) return;
+  if(Notification.permission !== "granted") return;
+
+  navigator.serviceWorker.ready.then(registration => {
+    registration.showNotification(title, {
+      body: body,
+      icon: "https://cdn-icons-png.flaticon.com/512/1827/1827370.png",
+      badge: "https://cdn-icons-png.flaticon.com/512/1827/1827370.png",
+      vibrate: [200, 100, 200],
+      tag: "floor-alert"
+    });
+  });
+}
+
+function togglePage(){
+  const main = document.getElementById("mainPage");
+  const admin = document.getElementById("adminPage");
+  const title = document.getElementById("pageTitle");
+  const btn = document.getElementById("toggleBtn");
+
+  if(currentPage === "main"){
+    currentPage = "admin";
+    main.classList.add("hidden");
+    admin.classList.remove("hidden");
+    title.innerHTML = "⚙️ Настройки админа";
+    btn.innerHTML = "⬅️ Назад";
+    loadAdmin();
+  }else{
+    currentPage = "main";
+    admin.classList.add("hidden");
+    main.classList.remove("hidden");
+    title.innerHTML = "🔥 Тепловая карта";
+    btn.innerHTML = "⚙️ Админ";
+    render();
+  }
+}
+
+function getLoad(data){
+  return data.staff > 0 ? data.guests / data.staff : 0;
+}
+
+function getStatus(data){
+  const load = getLoad(data);
+  const norm = data.norm;
+
+  if(load <= norm) return "green";
+  if(load <= norm + settings.yellowLimit) return "yellow";
+  return "red";
+}
+
+function statusText(status){
+  if(status === "red") return "Критичная";
+  if(status === "yellow") return "Высокая";
+  return "Нормальная";
+}
+
+function getMissing(data){
+  const required = Math.ceil(data.guests / data.norm);
+  const missing = required - data.staff;
+  return missing > 0 ? missing : 0;
+}
+
+function needText(data,status){
+  const missing = getMissing(data);
+
+  if(status === "green") return "Сотрудников хватает";
+  if(missing <= 1) return "Нужен сотрудник";
+  return `Нужно ${missing} сотрудника`;
+}
+
+function playAlertSound(){
+  const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+  audio.play().catch(() => {});
+}
+
+function changeValue(floor,type){
+  const label = type === "staff" ? "сотрудников" : "гостей";
+  let value = prompt(`Введите количество ${label} для ${floor} этажа:`, floors[floor][type]);
+
+  if(value === null) return;
+
+  value = Number(value);
+
+  if(isNaN(value) || value < 0){
+    alert("Введите правильное число");
+    return;
+  }
+
+  if(type === "staff" && value === 0){
+    alert("Сотрудников не может быть 0");
+    return;
+  }
+
+  floors[floor][type] = value;
+  saveAll();
+  render();
+}
+
+function renderNotification(redFloors){
+  const notification = document.getElementById("notification");
+
+  if(settings.alerts === "Выключено" || redFloors.length === 0){
+    notification.classList.add("hidden");
+    notification.innerHTML = "";
+    return;
+  }
+
+  let text = "🚨 ВНИМАНИЕ! Нужно перераспределить сотрудников:<br><br>";
+  let pushText = "";
+
+  redFloors.forEach(item => {
+    text += `
+      🔴 <b>${item.floor} этаж</b> перегружен.<br>
+      Гостей: ${item.guests}, сотрудников: ${item.staff}.<br>
+      Не хватает: <b>+${item.missing}</b> сотрудник(а).<br><br>
+    `;
+
+    pushText += `${item.floor} этаж: не хватает +${item.missing}. `;
+  });
+
+  notification.innerHTML = text;
+  notification.classList.remove("hidden");
+
+  if(text !== lastAlertText){
+    playAlertSound();
+
+    sendPushNotification(
+      "🚨 Горит этаж!",
+      pushText + "Нажмите, чтобы открыть тепловую карту."
+    );
+
+    lastAlertText = text;
+  }
+}
+
+function render(){
+  const box = document.getElementById("floors");
+  box.innerHTML = "";
+
+  let redFloors = [];
+
+  for(let i = 1; i <= 3; i++){
+    const data = floors[i];
+    const status = getStatus(data);
+    const missing = getMissing(data);
+
+    if(status === "red"){
+      redFloors.push({
+        floor:i,
+        guests:data.guests,
+        staff:data.staff,
+        missing:missing
+      });
+    }
+
+    box.innerHTML += `
+      <div class="floor ${status}">
+        <div class="counter">
+          <div class="box" onclick="changeValue(${i}, 'staff')">
+            <div class="label">Сотрудники</div>
+            <div class="num">${data.staff}</div>
+          </div>
+
+          <div class="box" onclick="changeValue(${i}, 'guests')">
+            <div class="label">Гости</div>
+            <div class="num">${data.guests}</div>
+          </div>
+        </div>
+
+        <div class="info">
+          <h2>Этаж №${i}</h2>
+          <p>Нагрузка : ${statusText(status)}</p>
+          <p>${needText(data,status)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  renderNotification(redFloors);
+}
+
+function loadAdmin(){
+  document.getElementById("norm1").value = floors[1].norm;
+  document.getElementById("norm2").value = floors[2].norm;
+  document.getElementById("norm3").value = floors[3].norm;
+
+  document.getElementById("yellowLimit").value = settings.yellowLimit;
+  document.getElementById("redLimit").value = settings.redLimit;
+  document.getElementById("alerts").value = settings.alerts;
+}
+
+function saveNorms(){
+  floors[1].norm = Number(document.getElementById("norm1").value);
+  floors[2].norm = Number(document.getElementById("norm2").value);
+  floors[3].norm = Number(document.getElementById("norm3").value);
+
+  saveAll();
+  alert("Нормы сохранены");
+}
+
+function saveLimits(){
+  settings.yellowLimit = Number(document.getElementById("yellowLimit").value);
+  settings.redLimit = Number(document.getElementById("redLimit").value);
+
+  saveAll();
+  alert("Пороговые значения сохранены");
+}
+
+function saveGeneral(){
+  settings.alerts = document.getElementById("alerts").value;
+  saveAll();
+  alert("Настройки сохранены");
+}
+
+registerServiceWorker();
+render();
+</script>
+
+</body>
+</html>
