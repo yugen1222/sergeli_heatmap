@@ -7,185 +7,41 @@
 
 <style>
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f4f6f9;
-  color:#111827;
-}
-
-.header{
-  background:#07111f;
-  color:white;
-  padding:18px 24px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:22px;
-  font-weight:bold;
-}
-
-.header button{
-  background:#1f2937;
-  color:white;
-  border:1px solid #374151;
-  padding:10px 14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-.container{
-  max-width:850px;
-  margin:25px auto;
-  padding:0 15px;
-}
-
-.notification{
-  background:#fee2e2;
-  border:3px solid #dc2626;
-  color:#7f1d1d;
-  padding:18px;
-  border-radius:14px;
-  margin-bottom:18px;
-  font-weight:bold;
-  font-size:19px;
-  animation:pulse 1s infinite;
-}
-
-@keyframes pulse{
-  0%{box-shadow:0 0 0 rgba(220,38,38,.4)}
-  50%{box-shadow:0 0 20px rgba(220,38,38,.8)}
-  100%{box-shadow:0 0 0 rgba(220,38,38,.4)}
-}
-
-.floor{
-  min-height:210px;
-  border-radius:14px;
-  margin-bottom:16px;
-  padding:20px;
-  display:flex;
-  align-items:center;
-  gap:35px;
-  color:white;
-  box-shadow:0 8px 18px rgba(0,0,0,.12);
-}
-
-.red{
-  background:#ff1f1f;
-  animation:redBlink 1s infinite;
-}
-
-@keyframes redBlink{
-  0%{filter:brightness(1)}
-  50%{filter:brightness(1.25)}
-  100%{filter:brightness(1)}
-}
-
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#111827}
+.header{background:#07111f;color:white;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;font-size:22px;font-weight:bold}
+.header button{background:#1f2937;color:white;border:1px solid #374151;padding:10px 14px;border-radius:8px;cursor:pointer}
+.container{max-width:1200px;margin:25px auto;padding:0 15px}
+.notification{background:#fee2e2;border:3px solid #dc2626;color:#7f1d1d;padding:18px;border-radius:14px;margin-bottom:18px;font-weight:bold;font-size:19px}
+.floors-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.floor{min-height:210px;border-radius:14px;padding:20px;display:flex;align-items:center;gap:35px;color:white;box-shadow:0 8px 18px rgba(0,0,0,.12)}
+.red{background:#ff1f1f;animation:redBlink 1s infinite}
+@keyframes redBlink{0%{filter:brightness(1)}50%{filter:brightness(1.25)}100%{filter:brightness(1)}}
 .yellow{background:#ffe100;color:#111827}
 .green{background:#55bd42}
-
 .counter{width:140px}
-
-.box{
-  border:3px solid white;
-  border-radius:7px;
-  text-align:center;
-  padding:12px;
-  margin-bottom:8px;
-  cursor:pointer;
-  background:rgba(255,255,255,.15);
-}
-
-.box:hover{transform:scale(1.03)}
-
-.label{
-  font-weight:bold;
-  font-size:15px;
-}
-
-.num{
-  font-size:42px;
-  font-weight:bold;
-  margin-top:6px;
-}
-
-.info{
-  flex:1;
-  text-align:center;
-  font-weight:bold;
-}
-
-.info h2{
-  font-size:34px;
-  margin:0 0 22px;
-}
-
+.box{border:3px solid white;border-radius:7px;text-align:center;padding:12px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,.15)}
+.label{font-weight:bold;font-size:15px}
+.num{font-size:42px;font-weight:bold;margin-top:6px}
+.info{flex:1;text-align:center;font-weight:bold}
+.info h2{font-size:34px;margin:0 0 22px}
 .info p{font-size:23px}
-
-.note{
-  background:#e8f1ff;
-  color:#2563eb;
-  padding:15px;
-  border-radius:10px;
-  margin-top:20px;
-  font-weight:bold;
-}
-
-.admin-card{
-  background:white;
-  border-radius:16px;
-  padding:25px;
-  margin-bottom:18px;
-  box-shadow:0 6px 16px rgba(0,0,0,.08);
-}
-
-.admin-card h2{
-  margin-top:0;
-  color:#2563eb;
-}
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  border-left:6px solid #ddd;
-  padding:15px;
-  margin:12px 0;
-  background:#f9fafb;
-  border-radius:10px;
-}
-
-.row.red-line{border-left-color:#ef4444}
-.row.yellow-line{border-left-color:#eab308}
-.row.green-line{border-left-color:#22c55e}
-
-input,select{
-  padding:12px;
-  border:1px solid #d1d5db;
-  border-radius:8px;
-  font-size:17px;
-  width:130px;
-}
-
-.save{
-  background:#2563eb;
-  color:white;
-  border:none;
-  padding:12px 22px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
+.note{background:#e8f1ff;color:#2563eb;padding:15px;border-radius:10px;margin-top:20px;font-weight:bold}
+.admin-card{background:white;border-radius:16px;padding:25px;margin-bottom:18px;box-shadow:0 6px 16px rgba(0,0,0,.08)}
+.admin-card h2{margin-top:0;color:#2563eb}
+.row{display:flex;justify-content:space-between;align-items:center;gap:15px;border-left:6px solid #ddd;padding:15px;margin:12px 0;background:#f9fafb;border-radius:10px}
+.red-line{border-left-color:#ef4444}.yellow-line{border-left-color:#eab308}.green-line{border-left-color:#22c55e}
+input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:17px;width:130px}
+.save{background:#2563eb;color:white;border:none;padding:12px 22px;border-radius:8px;cursor:pointer;font-weight:bold}
 .hidden{display:none}
 
+@media(min-width:900px){
+  .floors-grid{grid-template-columns:1fr 1fr}
+  .floor{min-height:260px}
+  .floor:first-child{grid-column:1 / 3}
+}
+
 @media(max-width:650px){
-  .floor{
-    gap:15px;
-    padding:14px;
-  }
+  .floor{gap:15px;padding:14px}
   .counter{width:110px}
   .info h2{font-size:26px}
   .info p{font-size:18px}
@@ -205,7 +61,7 @@ input,select{
 
   <div id="mainPage">
     <div id="notification" class="notification hidden"></div>
-    <div id="floors"></div>
+    <div id="floors" class="floors-grid"></div>
 
     <div class="note">
       ℹ️ Нажмите на количество сотрудников или гостей, чтобы изменить данные.
@@ -258,85 +114,58 @@ input,select{
       <button class="save" onclick="saveLimits()">Сохранить пороги</button>
     </div>
 
-    <div class="admin-card">
-      <h2>Уведомления</h2>
-
-      <div class="row">
-        <b>Push-уведомления</b>
-        <select id="alerts">
-          <option>Включено</option>
-          <option>Выключено</option>
-        </select>
-      </div>
-
-      <button class="save" onclick="requestNotificationPermission()">Разрешить уведомления</button>
-      <br><br>
-      <button class="save" onclick="saveGeneral()">Сохранить настройки</button>
-    </div>
-
   </div>
-
 </div>
 
-<script>
-let settings = JSON.parse(localStorage.getItem("settings")) || {
-  yellowLimit: 1,
-  redLimit: 2,
-  alerts: "Включено"
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ВАЖНО: сюда нужно вставить твои данные Firebase */
+const firebaseConfig = {
+  apiKey: "ВСТАВЬ_СЮДА",
+  authDomain: "ВСТАВЬ_СЮДА",
+  databaseURL: "ВСТАВЬ_СЮДА",
+  projectId: "ВСТАВЬ_СЮДА",
+  storageBucket: "ВСТАВЬ_СЮДА",
+  messagingSenderId: "ВСТАВЬ_СЮДА",
+  appId: "ВСТАВЬ_СЮДА"
 };
 
-let floors = JSON.parse(localStorage.getItem("floors")) || {
-  1:{staff:4, guests:30, norm:5},
-  2:{staff:5, guests:20, norm:4},
-  3:{staff:6, guests:18, norm:6}
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let settings = {yellowLimit:1, redLimit:2};
+let floors = {
+  1:{staff:4, guests:20, norm:5},
+  2:{staff:2, guests:20, norm:5},
+  3:{staff:6, guests:15, norm:5}
 };
 
 let currentPage = "main";
-let lastAlertText = "";
 
-function saveAll(){
-  localStorage.setItem("floors", JSON.stringify(floors));
-  localStorage.setItem("settings", JSON.stringify(settings));
-}
+const floorsRef = ref(db, "sergeli_heatmap/floors");
+const settingsRef = ref(db, "sergeli_heatmap/settings");
 
-async function registerServiceWorker(){
-  if("serviceWorker" in navigator){
-    await navigator.serviceWorker.register("sw.js");
-  }
-}
-
-async function requestNotificationPermission(){
-  if(!("Notification" in window)){
-    alert("Ваш браузер не поддерживает уведомления");
-    return;
-  }
-
-  const permission = await Notification.requestPermission();
-
-  if(permission === "granted"){
-    alert("Уведомления разрешены");
+onValue(floorsRef, snapshot => {
+  if(snapshot.exists()){
+    floors = snapshot.val();
   }else{
-    alert("Уведомления не разрешены");
+    set(floorsRef, floors);
   }
-}
+  render();
+});
 
-function sendPushNotification(title, body){
-  if(settings.alerts === "Выключено") return;
-  if(!("Notification" in window)) return;
-  if(Notification.permission !== "granted") return;
+onValue(settingsRef, snapshot => {
+  if(snapshot.exists()){
+    settings = snapshot.val();
+  }else{
+    set(settingsRef, settings);
+  }
+  render();
+});
 
-  navigator.serviceWorker.ready.then(registration => {
-    registration.showNotification(title, {
-      body: body,
-      icon: "https://cdn-icons-png.flaticon.com/512/1827/1827370.png",
-      badge: "https://cdn-icons-png.flaticon.com/512/1827/1827370.png",
-      vibrate: [200, 100, 200],
-      tag: "floor-alert"
-    });
-  });
-}
-
-function togglePage(){
+window.togglePage = function(){
   const main = document.getElementById("mainPage");
   const admin = document.getElementById("adminPage");
   const title = document.getElementById("pageTitle");
@@ -365,10 +194,10 @@ function getLoad(data){
 
 function getStatus(data){
   const load = getLoad(data);
-  const norm = data.norm;
+  const norm = Number(data.norm);
 
   if(load <= norm) return "green";
-  if(load <= norm + settings.yellowLimit) return "yellow";
+  if(load <= norm + Number(settings.yellowLimit)) return "yellow";
   return "red";
 }
 
@@ -386,23 +215,16 @@ function getMissing(data){
 
 function needText(data,status){
   const missing = getMissing(data);
-
   if(status === "green") return "Сотрудников хватает";
   if(missing <= 1) return "Нужен сотрудник";
   return `Нужно ${missing} сотрудника`;
 }
 
-function playAlertSound(){
-  const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-  audio.play().catch(() => {});
-}
-
-function changeValue(floor,type){
+window.changeValue = async function(floor,type){
   const label = type === "staff" ? "сотрудников" : "гостей";
   let value = prompt(`Введите количество ${label} для ${floor} этажа:`, floors[floor][type]);
 
   if(value === null) return;
-
   value = Number(value);
 
   if(isNaN(value) || value < 0){
@@ -415,22 +237,21 @@ function changeValue(floor,type){
     return;
   }
 
-  floors[floor][type] = value;
-  saveAll();
-  render();
+  await update(ref(db, `sergeli_heatmap/floors/${floor}`), {
+    [type]: value
+  });
 }
 
 function renderNotification(redFloors){
   const notification = document.getElementById("notification");
 
-  if(settings.alerts === "Выключено" || redFloors.length === 0){
+  if(redFloors.length === 0){
     notification.classList.add("hidden");
     notification.innerHTML = "";
     return;
   }
 
   let text = "🚨 ВНИМАНИЕ! Нужно перераспределить сотрудников:<br><br>";
-  let pushText = "";
 
   redFloors.forEach(item => {
     text += `
@@ -438,29 +259,17 @@ function renderNotification(redFloors){
       Гостей: ${item.guests}, сотрудников: ${item.staff}.<br>
       Не хватает: <b>+${item.missing}</b> сотрудник(а).<br><br>
     `;
-
-    pushText += `${item.floor} этаж: не хватает +${item.missing}. `;
   });
 
   notification.innerHTML = text;
   notification.classList.remove("hidden");
-
-  if(text !== lastAlertText){
-    playAlertSound();
-
-    sendPushNotification(
-      "🚨 Горит этаж!",
-      pushText + "Нажмите, чтобы открыть тепловую карту."
-    );
-
-    lastAlertText = text;
-  }
 }
 
 function render(){
   const box = document.getElementById("floors");
-  box.innerHTML = "";
+  if(!box) return;
 
+  box.innerHTML = "";
   let redFloors = [];
 
   for(let i = 1; i <= 3; i++){
@@ -507,36 +316,25 @@ function loadAdmin(){
   document.getElementById("norm1").value = floors[1].norm;
   document.getElementById("norm2").value = floors[2].norm;
   document.getElementById("norm3").value = floors[3].norm;
-
   document.getElementById("yellowLimit").value = settings.yellowLimit;
   document.getElementById("redLimit").value = settings.redLimit;
-  document.getElementById("alerts").value = settings.alerts;
 }
 
-function saveNorms(){
-  floors[1].norm = Number(document.getElementById("norm1").value);
-  floors[2].norm = Number(document.getElementById("norm2").value);
-  floors[3].norm = Number(document.getElementById("norm3").value);
-
-  saveAll();
+window.saveNorms = async function(){
+  await update(ref(db, "sergeli_heatmap/floors/1"), {norm:Number(document.getElementById("norm1").value)});
+  await update(ref(db, "sergeli_heatmap/floors/2"), {norm:Number(document.getElementById("norm2").value)});
+  await update(ref(db, "sergeli_heatmap/floors/3"), {norm:Number(document.getElementById("norm3").value)});
   alert("Нормы сохранены");
 }
 
-function saveLimits(){
-  settings.yellowLimit = Number(document.getElementById("yellowLimit").value);
-  settings.redLimit = Number(document.getElementById("redLimit").value);
-
-  saveAll();
+window.saveLimits = async function(){
+  await set(settingsRef, {
+    yellowLimit:Number(document.getElementById("yellowLimit").value),
+    redLimit:Number(document.getElementById("redLimit").value)
+  });
   alert("Пороговые значения сохранены");
 }
 
-function saveGeneral(){
-  settings.alerts = document.getElementById("alerts").value;
-  saveAll();
-  alert("Настройки сохранены");
-}
-
-registerServiceWorker();
 render();
 </script>
 
