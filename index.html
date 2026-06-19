@@ -2,73 +2,66 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Тепловая карта</title>
+<title>Тепловая карта Сергели</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#111827}
 .header{background:#07111f;color:white;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;font-size:22px;font-weight:bold}
-.header button{background:#1f2937;color:white;border:1px solid #374151;padding:10px 14px;border-radius:8px;cursor:pointer}
-.container{max-width:1200px;margin:25px auto;padding:0 15px}
+.header button{background:#1f2937;color:white;border:1px solid #374151;padding:10px 14px;border-radius:8px;cursor:pointer;margin-left:8px}
+.container{max-width:1400px;margin:25px auto;padding:0 15px}
 
 .alert-count{background:#dc2626;color:white;padding:6px 12px;border-radius:20px;font-size:14px;margin-left:10px}
 .notification{background:#fee2e2;border:3px solid #dc2626;color:#7f1d1d;padding:18px;border-radius:14px;margin-bottom:18px;font-weight:bold;font-size:19px}
 
 .floors-grid{display:grid;grid-template-columns:1fr;gap:16px}
-.floor{min-height:210px;border-radius:14px;padding:20px;display:flex;align-items:center;gap:35px;color:white;box-shadow:0 8px 18px rgba(0,0,0,.12)}
+.floor{min-height:230px;border-radius:16px;padding:20px;display:flex;align-items:center;gap:25px;color:white;box-shadow:0 8px 18px rgba(0,0,0,.12)}
 .red{background:#ff1f1f;animation:redBlink 1s infinite}
 @keyframes redBlink{0%{filter:brightness(1)}50%{filter:brightness(1.25)}100%{filter:brightness(1)}}
 .yellow{background:#ffe100;color:#111827}
 .green{background:#55bd42}
 
-.counter{width:140px}
-.box{border:3px solid white;border-radius:7px;text-align:center;padding:12px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,.15)}
+.counter{width:135px}
+.box{border:3px solid white;border-radius:10px;text-align:center;padding:12px;margin-bottom:10px;cursor:pointer;background:rgba(255,255,255,.18)}
 .label{font-weight:bold;font-size:15px}
 .num{font-size:42px;font-weight:bold;margin-top:6px}
 .info{flex:1;text-align:center;font-weight:bold}
-.info h2{font-size:34px;margin:0 0 22px}
-.info p{font-size:23px}
+.info h2{font-size:34px;margin:0 0 20px}
+.info p{font-size:22px;margin:12px 0}
 .note{background:#e8f1ff;color:#2563eb;padding:15px;border-radius:10px;margin-top:20px;font-weight:bold}
 
 .admin-card{background:white;border-radius:16px;padding:25px;margin-bottom:18px;box-shadow:0 6px 16px rgba(0,0,0,.08)}
 .admin-card h2{margin-top:0;color:#2563eb}
 .row{display:flex;justify-content:space-between;align-items:center;gap:15px;border-left:6px solid #ddd;padding:15px;margin:12px 0;background:#f9fafb;border-radius:10px}
 .red-line{border-left-color:#ef4444}.yellow-line{border-left-color:#eab308}.green-line{border-left-color:#22c55e}.blue-line{border-left-color:#2563eb}
-input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:17px;width:140px}
-.save{background:#2563eb;color:white;border:none;padding:12px 22px;border-radius:8px;cursor:pointer;font-weight:bold;margin-top:8px}
+input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:17px;width:150px}
+.save{background:#2563eb;color:white;border:none;padding:12px 22px;border-radius:8px;cursor:pointer;font-weight:bold;margin:6px 6px 6px 0}
+
+.analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.stat{background:#f9fafb;border-radius:14px;padding:18px;border-left:6px solid #2563eb}
+.stat b{font-size:28px;display:block;margin-top:8px}
+.history-item{background:#f9fafb;padding:12px;border-radius:10px;margin:8px 0;border-left:5px solid #6b7280}
 .hidden{display:none}
 
 @media(min-width:900px){
-  .floors-grid{
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
-  }
-
-  .floor{
-    min-height:350px;
-  }
-
-  .info h2{
-    font-size:42px;
-  }
-
-  .info p{
-    font-size:28px;
-  }
-
-  .num{
-    font-size:56px;
-  }
+  .floors-grid{grid-template-columns:repeat(3,1fr);gap:20px}
+  .floor{min-height:350px;flex-direction:column;justify-content:center;text-align:center}
+  .counter{width:190px}
+  .box{padding:16px}
+  .num{font-size:58px}
+  .info h2{font-size:42px}
+  .info p{font-size:28px}
 }
 
 @media(max-width:650px){
-  .header{font-size:18px}
+  .header{font-size:17px;padding:14px}
   .floor{gap:15px;padding:14px}
   .counter{width:110px}
   .info h2{font-size:26px}
   .info p{font-size:18px}
   .num{font-size:34px}
+  .row{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
@@ -80,7 +73,9 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
     <span id="pageTitle">🔥 Тепловая карта</span>
     <span id="alertCount" class="alert-count hidden">0 тревог</span>
   </div>
-  <button onclick="togglePage()" id="toggleBtn">⚙️ Админ</button>
+  <div>
+    <button onclick="togglePage()" id="toggleBtn">⚙️ Админ</button>
+  </div>
 </div>
 
 <div class="container">
@@ -97,7 +92,19 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
   <div id="adminPage" class="hidden">
 
     <div class="admin-card">
-      <h2>Нормы загрузки</h2>
+      <h2>📊 Аналитика сегодня</h2>
+      <div class="analytics-grid">
+        <div class="stat">🔴 Критичных тревог <b id="redCount">0</b></div>
+        <div class="stat">🟡 Предупреждений <b id="yellowCount">0</b></div>
+        <div class="stat">👥 Гостей сейчас <b id="totalGuests">0</b></div>
+        <div class="stat">🧑‍💼 Сотрудников сейчас <b id="totalStaff">0</b></div>
+        <div class="stat">🏆 Самый загруженный этаж <b id="topFloor">—</b></div>
+        <div class="stat">🚨 Активных тревог <b id="activeAlerts">0</b></div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h2>⚙️ Нормы загрузки</h2>
       <p>Норма = сколько гостей может обслуживать 1 сотрудник.</p>
 
       <div class="row red-line"><b>1 этаж</b><input type="number" id="norm1"></div>
@@ -108,7 +115,7 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
     </div>
 
     <div class="admin-card">
-      <h2>Пороговые значения</h2>
+      <h2>🚦 Пороговые значения</h2>
 
       <div class="row yellow-line">
         <div><b>Высокая нагрузка</b><br><small>Нагрузка больше нормы на</small></div>
@@ -124,7 +131,7 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
     </div>
 
     <div class="admin-card">
-      <h2>Уведомления</h2>
+      <h2>🔔 Уведомления</h2>
 
       <div class="row blue-line">
         <b>Push-уведомления</b>
@@ -146,13 +153,19 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
       <button class="save" onclick="saveNotificationSettings()">Сохранить уведомления</button>
     </div>
 
+    <div class="admin-card">
+      <h2>📜 История изменений</h2>
+      <div id="historyList">Пока нет изменений</div>
+      <button class="save" onclick="clearHistory()">Очистить историю</button>
+    </div>
+
   </div>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, set, update, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDRvsn15ornx30mkwiTlhhlaL3-HT67D_w",
@@ -184,8 +197,12 @@ let floors = {
   3:{staff:6, guests:15, norm:5}
 };
 
-const floorsRef = ref(db, "sergeli_heatmap/floors");
-const settingsRef = ref(db, "sergeli_heatmap/settings");
+let history = [];
+
+const rootPath = "sergeli_heatmap";
+const floorsRef = ref(db, `${rootPath}/floors`);
+const settingsRef = ref(db, `${rootPath}/settings`);
+const historyRef = ref(db, `${rootPath}/history`);
 
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -198,6 +215,7 @@ onValue(floorsRef, snapshot => {
     set(floorsRef, floors);
   }
   render();
+  renderAnalytics();
 });
 
 onValue(settingsRef, snapshot => {
@@ -207,6 +225,18 @@ onValue(settingsRef, snapshot => {
     set(settingsRef, settings);
   }
   render();
+  renderAnalytics();
+});
+
+onValue(historyRef, snapshot => {
+  if(snapshot.exists()){
+    const data = snapshot.val();
+    history = Object.keys(data).map(key => ({id:key, ...data[key]})).reverse();
+  }else{
+    history = [];
+  }
+  renderHistory();
+  renderAnalytics();
 });
 
 window.togglePage = function(){
@@ -219,9 +249,11 @@ window.togglePage = function(){
     currentPage = "admin";
     main.classList.add("hidden");
     admin.classList.remove("hidden");
-    title.innerHTML = "⚙️ Настройки админа";
+    title.innerHTML = "⚙️ Админ-панель";
     btn.innerHTML = "⬅️ Назад";
     loadAdmin();
+    renderAnalytics();
+    renderHistory();
   }else{
     currentPage = "main";
     admin.classList.add("hidden");
@@ -239,7 +271,6 @@ function getLoad(data){
 function getStatus(data){
   const load = getLoad(data);
   const norm = Number(data.norm);
-
   if(load <= norm) return "green";
   if(load <= norm + Number(settings.yellowLimit)) return "yellow";
   return "red";
@@ -264,11 +295,29 @@ function needText(data,status){
   return `Нужно ${missing} сотрудника`;
 }
 
+function nowText(){
+  return new Date().toLocaleString("ru-RU");
+}
+
+function todayDate(){
+  return new Date().toLocaleDateString("ru-RU");
+}
+
+async function addHistory(item){
+  await push(historyRef, {
+    ...item,
+    time: nowText(),
+    date: todayDate()
+  });
+}
+
 window.changeValue = async function(floor,type){
   const label = type === "staff" ? "сотрудников" : "гостей";
-  let value = prompt(`Введите количество ${label} для ${floor} этажа:`, floors[floor][type]);
+  const oldValue = floors[floor][type];
 
+  let value = prompt(`Введите количество ${label} для ${floor} этажа:`, oldValue);
   if(value === null) return;
+
   value = Number(value);
 
   if(isNaN(value) || value < 0){
@@ -281,8 +330,14 @@ window.changeValue = async function(floor,type){
     return;
   }
 
-  await update(ref(db, `sergeli_heatmap/floors/${floor}`), {
-    [type]: value
+  await update(ref(db, `${rootPath}/floors/${floor}`), {[type]: value});
+
+  await addHistory({
+    floor,
+    type,
+    label: type === "staff" ? "Сотрудники" : "Гости",
+    oldValue,
+    newValue:value
   });
 }
 
@@ -300,7 +355,7 @@ function sendPhoneNotification(title, body){
   if("serviceWorker" in navigator){
     navigator.serviceWorker.ready.then(registration => {
       registration.showNotification(title, {
-        body: body,
+        body,
         icon: "https://cdn-icons-png.flaticon.com/512/1827/1827370.png",
         badge: "https://cdn-icons-png.flaticon.com/512/1827/1827370.png",
         vibrate: [200,100,200],
@@ -367,7 +422,7 @@ function render(){
         floor:i,
         guests:data.guests,
         staff:data.staff,
-        missing:missing
+        missing
       });
     }
 
@@ -378,7 +433,6 @@ function render(){
             <div class="label">Сотрудники</div>
             <div class="num">${data.staff}</div>
           </div>
-
           <div class="box" onclick="changeValue(${i}, 'guests')">
             <div class="label">Гости</div>
             <div class="num">${data.guests}</div>
@@ -387,7 +441,7 @@ function render(){
 
         <div class="info">
           <h2>Этаж №${i}</h2>
-          <p>Нагрузка : ${statusText(status)}</p>
+          <p>Нагрузка: ${statusText(status)}</p>
           <p>${needText(data,status)}</p>
         </div>
       </div>
@@ -408,9 +462,9 @@ function loadAdmin(){
 }
 
 window.saveNorms = async function(){
-  await update(ref(db, "sergeli_heatmap/floors/1"), {norm:Number(document.getElementById("norm1").value)});
-  await update(ref(db, "sergeli_heatmap/floors/2"), {norm:Number(document.getElementById("norm2").value)});
-  await update(ref(db, "sergeli_heatmap/floors/3"), {norm:Number(document.getElementById("norm3").value)});
+  await update(ref(db, `${rootPath}/floors/1`), {norm:Number(document.getElementById("norm1").value)});
+  await update(ref(db, `${rootPath}/floors/2`), {norm:Number(document.getElementById("norm2").value)});
+  await update(ref(db, `${rootPath}/floors/3`), {norm:Number(document.getElementById("norm3").value)});
   alert("Нормы сохранены");
 }
 
@@ -442,6 +496,71 @@ window.requestNotificationPermission = async function(){
     alert("Уведомления разрешены");
   }else{
     alert("Уведомления не разрешены");
+  }
+}
+
+function renderAnalytics(){
+  if(!document.getElementById("redCount")) return;
+
+  let redNow = 0;
+  let yellowNow = 0;
+  let totalGuests = 0;
+  let totalStaff = 0;
+  let topFloor = 1;
+  let topLoad = -1;
+
+  for(let i=1;i<=3;i++){
+    const data = floors[i];
+    const status = getStatus(data);
+    const load = getLoad(data);
+
+    if(status === "red") redNow++;
+    if(status === "yellow") yellowNow++;
+
+    totalGuests += Number(data.guests || 0);
+    totalStaff += Number(data.staff || 0);
+
+    if(load > topLoad){
+      topLoad = load;
+      topFloor = i;
+    }
+  }
+
+  const today = todayDate();
+  const todayHistory = history.filter(h => h.date === today);
+
+  let redEvents = redNow;
+  let yellowEvents = yellowNow;
+
+  document.getElementById("redCount").innerHTML = redEvents;
+  document.getElementById("yellowCount").innerHTML = yellowEvents;
+  document.getElementById("totalGuests").innerHTML = totalGuests;
+  document.getElementById("totalStaff").innerHTML = totalStaff;
+  document.getElementById("topFloor").innerHTML = `${topFloor} этаж`;
+  document.getElementById("activeAlerts").innerHTML = redNow;
+}
+
+function renderHistory(){
+  const list = document.getElementById("historyList");
+  if(!list) return;
+
+  if(history.length === 0){
+    list.innerHTML = "Пока нет изменений";
+    return;
+  }
+
+  list.innerHTML = history.slice(0,30).map(h => `
+    <div class="history-item">
+      <b>${h.time}</b><br>
+      Этаж: <b>${h.floor}</b><br>
+      ${h.label}: <b>${h.oldValue}</b> → <b>${h.newValue}</b>
+    </div>
+  `).join("");
+}
+
+window.clearHistory = async function(){
+  if(confirm("Очистить всю историю?")){
+    await remove(historyRef);
   }
 }
 
