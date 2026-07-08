@@ -142,7 +142,7 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
       </div>
 
       <div class="row blue-line">
-        <b>Звуковое оповещение</b>
+        <b>Звуковое/голосовое оповещение</b>
         <select id="soundEnabled">
           <option>Включено</option>
           <option>Выключено</option>
@@ -178,6 +178,29 @@ const firebaseConfig = {
   measurementId: "G-43974K6NSQ"
 };
 
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let currentPage = "main";
+let lastAlertText = "";
+
+let settings = {
+  yellowLimit: 1,
+  redLimit: 2,
+  pushEnabled: "Включено",
+  soundEnabled: "Включено"
+};
+
+let floors = {
+  1: {staff: 4, guests: 20, norm: 5},
+  2: {staff: 2, guests: 20, norm: 5},
+  3: {staff: 6, guests: 15, norm: 5}
+};
+
+let history = [];
+
+// Голосовые записи должны лежать рядом с index.html:
+// floor1.mp3, floor2.mp3, floor3.mp3
 const floorVoice = {
   1: new Audio("floor1.mp3"),
   2: new Audio("floor2.mp3"),
@@ -187,27 +210,6 @@ const floorVoice = {
 let voiceQueue = [];
 let isVoicePlaying = false;
 let lastVoiceTime = {};
-  
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-let currentPage = "main";
-let lastAlertText = "";
-
-let settings = {
-  yellowLimit:1,
-  redLimit:2,
-  pushEnabled:"Включено",
-  soundEnabled:"Включено"
-};
-
-let floors = {
-  1:{staff:4, guests:20, norm:5},
-  2:{staff:2, guests:20, norm:5},
-  3:{staff:6, guests:15, norm:5}
-};
-
-let history = [];
 
 const rootPath = "sergeli_heatmap";
 const floorsRef = ref(db, `${rootPath}/floors`);
@@ -351,10 +353,51 @@ window.changeValue = async function(floor,type){
   });
 }
 
-function playAlertSound(){
+function addVoiceToQueue(floor){
   if(settings.soundEnabled === "Выключено") return;
-  const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-  audio.play().catch(()=>{});
+
+  const now = Date.now();
+  const cooldown = 5 * 60 * 1000; // одно и то же сообщение не повторяется 5 минут
+
+  if(lastVoiceTime[floor] && now - lastVoiceTime[floor] < cooldown){
+    return;
+  }
+
+  if(!voiceQueue.includes(floor)){
+    voiceQueue.push(floor);
+  }
+
+  playNextVoice();
+}
+
+function playNextVoice(){
+  if(isVoicePlaying) return;
+  if(voiceQueue.length === 0) return;
+
+  const floor = voiceQueue.shift();
+  const audio = floorVoice[floor];
+
+  if(!audio) return;
+
+  isVoicePlaying = true;
+  lastVoiceTime[floor] = Date.now();
+
+  Object.values(floorVoice).forEach(item => {
+    item.pause();
+    item.currentTime = 0;
+  });
+
+  audio.currentTime = 0;
+
+  audio.play().catch(() => {
+    isVoicePlaying = false;
+    setTimeout(playNextVoice, 800);
+  });
+
+  audio.onended = () => {
+    isVoicePlaying = false;
+    setTimeout(playNextVoice, 1500);
+  };
 }
 
 function sendPhoneNotification(title, body){
@@ -412,7 +455,6 @@ function renderNotification(redFloors){
   notification.classList.remove("hidden");
 
   if(text !== lastAlertText){
-    playAlertSound();
     sendPhoneNotification("🚨 Горит этаж!", pushText);
     lastAlertText = text;
   }
@@ -512,54 +554,9 @@ window.requestNotificationPermission = async function(){
   }
 }
 
-
-  
 function renderAnalytics(){
   if(!document.getElementById("redCount")) return;
-function addVoiceToQueue(floor){
-  if(settings.soundEnabled === "Выключено") return;
 
-  const now = Date.now();
-  const cooldown = 5 * 60 * 1000; // 5 минут
-
-  if(lastVoiceTime[floor] && now - lastVoiceTime[floor] < cooldown){
-    return;
-  }
-
-  if(!voiceQueue.includes(floor)){
-    voiceQueue.push(floor);
-  }
-
-  playNextVoice();
-}
-
-function playNextVoice(){
-  if(isVoicePlaying) return;
-  if(voiceQueue.length === 0) return;
-
-  const floor = voiceQueue.shift();
-  const audio = floorVoice[floor];
-
-  if(!audio) return;
-
-  isVoicePlaying = true;
-  lastVoiceTime[floor] = Date.now();
-
-  audio.currentTime = 0;
-
-  audio.play().catch(() => {
-    isVoicePlaying = false;
-    playNextVoice();
-  });
-
-  audio.onended = () => {
-    isVoicePlaying = false;
-
-    setTimeout(() => {
-      playNextVoice();
-    }, 1500);
-  };
-}
   let redNow = 0;
   let yellowNow = 0;
   let totalGuests = 0;
@@ -584,14 +581,8 @@ function playNextVoice(){
     }
   }
 
-  const today = todayDate();
-  const todayHistory = history.filter(h => h.date === today);
-
-  let redEvents = redNow;
-  let yellowEvents = yellowNow;
-
-  document.getElementById("redCount").innerHTML = redEvents;
-  document.getElementById("yellowCount").innerHTML = yellowEvents;
+  document.getElementById("redCount").innerHTML = redNow;
+  document.getElementById("yellowCount").innerHTML = yellowNow;
   document.getElementById("totalGuests").innerHTML = totalGuests;
   document.getElementById("totalStaff").innerHTML = totalStaff;
   document.getElementById("topFloor").innerHTML = `${topFloor} этаж`;
