@@ -178,6 +178,16 @@ const firebaseConfig = {
   measurementId: "G-43974K6NSQ"
 };
 
+const floorVoice = {
+  1: new Audio("floor1.mp3"),
+  2: new Audio("floor2.mp3"),
+  3: new Audio("floor3.mp3")
+};
+
+let voiceQueue = [];
+let isVoicePlaying = false;
+let lastVoiceTime = {};
+  
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -387,11 +397,14 @@ function renderNotification(redFloors){
   let pushText = "";
 
   redFloors.forEach(item => {
+    addVoiceToQueue(item.floor);
+
     text += `
       🔴 <b>${item.floor} этаж</b> перегружен.<br>
       Гостей: ${item.guests}, сотрудников: ${item.staff}.<br>
       Не хватает: <b>+${item.missing}</b> сотрудник(а).<br><br>
     `;
+
     pushText += `${item.floor} этаж: не хватает +${item.missing}. `;
   });
 
@@ -499,9 +512,54 @@ window.requestNotificationPermission = async function(){
   }
 }
 
+
+  
 function renderAnalytics(){
   if(!document.getElementById("redCount")) return;
+function addVoiceToQueue(floor){
+  if(settings.soundEnabled === "Выключено") return;
 
+  const now = Date.now();
+  const cooldown = 5 * 60 * 1000; // 5 минут
+
+  if(lastVoiceTime[floor] && now - lastVoiceTime[floor] < cooldown){
+    return;
+  }
+
+  if(!voiceQueue.includes(floor)){
+    voiceQueue.push(floor);
+  }
+
+  playNextVoice();
+}
+
+function playNextVoice(){
+  if(isVoicePlaying) return;
+  if(voiceQueue.length === 0) return;
+
+  const floor = voiceQueue.shift();
+  const audio = floorVoice[floor];
+
+  if(!audio) return;
+
+  isVoicePlaying = true;
+  lastVoiceTime[floor] = Date.now();
+
+  audio.currentTime = 0;
+
+  audio.play().catch(() => {
+    isVoicePlaying = false;
+    playNextVoice();
+  });
+
+  audio.onended = () => {
+    isVoicePlaying = false;
+
+    setTimeout(() => {
+      playNextVoice();
+    }, 1500);
+  };
+}
   let redNow = 0;
   let yellowNow = 0;
   let totalGuests = 0;
