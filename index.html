@@ -15,10 +15,6 @@ body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#111827}
 .alert-count{background:#dc2626;color:white;padding:6px 12px;border-radius:20px;font-size:14px;margin-left:10px}
 .notification{background:#fee2e2;border:3px solid #dc2626;color:#7f1d1d;padding:18px;border-radius:14px;margin-bottom:18px;font-weight:bold;font-size:19px}
 
-.voice-panel{background:#fff7ed;border:2px solid #fb923c;color:#9a3412;padding:14px;border-radius:12px;margin-bottom:18px;font-weight:bold;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.voice-panel button{background:#f97316;color:white;border:none;border-radius:8px;padding:10px 14px;font-weight:bold;cursor:pointer}
-.voice-status{font-size:14px;color:#7c2d12}
-
 .floors-grid{display:grid;grid-template-columns:1fr;gap:16px}
 .floor{min-height:230px;border-radius:16px;padding:20px;display:flex;align-items:center;gap:25px;color:white;box-shadow:0 8px 18px rgba(0,0,0,.12)}
 .red{background:#ff1f1f;animation:redBlink 1s infinite}
@@ -38,15 +34,26 @@ body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#111827}
 .admin-card{background:white;border-radius:16px;padding:25px;margin-bottom:18px;box-shadow:0 6px 16px rgba(0,0,0,.08)}
 .admin-card h2{margin-top:0;color:#2563eb}
 .row{display:flex;justify-content:space-between;align-items:center;gap:15px;border-left:6px solid #ddd;padding:15px;margin:12px 0;background:#f9fafb;border-radius:10px}
-.red-line{border-left-color:#ef4444}.yellow-line{border-left-color:#eab308}.green-line{border-left-color:#22c55e}.blue-line{border-left-color:#2563eb}.orange-line{border-left-color:#f97316}
+.red-line{border-left-color:#ef4444}.yellow-line{border-left-color:#eab308}.green-line{border-left-color:#22c55e}.blue-line{border-left-color:#2563eb}
 input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:17px;width:150px}
 .save{background:#2563eb;color:white;border:none;padding:12px 22px;border-radius:8px;cursor:pointer;font-weight:bold;margin:6px 6px 6px 0}
-.voice-btn{background:#f97316;color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;font-weight:bold;margin:6px 6px 6px 0}
 
 .analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .stat{background:#f9fafb;border-radius:14px;padding:18px;border-left:6px solid #2563eb}
 .stat b{font-size:28px;display:block;margin-top:8px}
-.history-item{background:#f9fafb;padding:12px;border-radius:10px;margin:8px 0;border-left:5px solid #6b7280}
+.history-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.history-column{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px;min-height:180px}
+.history-column-title{margin:0 0 12px;padding:12px;border-radius:10px;text-align:center;font-size:20px;color:white}
+.history-column.floor-1 .history-column-title{background:#ef4444}
+.history-column.floor-2 .history-column-title{background:#eab308;color:#111827}
+.history-column.floor-3 .history-column-title{background:#22c55e}
+.history-item{background:white;padding:12px;border-radius:10px;margin:8px 0;border-left:5px solid #6b7280;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.history-item.guests{border-left-color:#ef4444}
+.history-item.staff{border-left-color:#22c55e}
+.history-time{font-size:13px;color:#6b7280;margin-bottom:7px}
+.history-change{font-size:16px;font-weight:bold}
+.history-values{font-size:20px;margin-top:6px}
+.history-empty{color:#6b7280;text-align:center;padding:24px 8px}
 .hidden{display:none}
 
 @media(min-width:900px){
@@ -67,6 +74,11 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
   .info p{font-size:18px}
   .num{font-size:34px}
   .row{flex-direction:column;align-items:flex-start}
+  .history-grid{grid-template-columns:1fr}
+}
+
+@media(min-width:651px) and (max-width:1000px){
+  .history-grid{grid-template-columns:repeat(3,minmax(220px,1fr));overflow-x:auto;padding-bottom:8px}
 }
 </style>
 </head>
@@ -86,14 +98,6 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
 <div class="container">
 
   <div id="mainPage">
-    <div id="voicePanel" class="voice-panel">
-      <div>
-        🔊 Голосовые уведомления<br>
-        <span id="voiceStatus" class="voice-status">Нажмите кнопку один раз после открытия сайта, чтобы браузер разрешил звук.</span>
-      </div>
-      <button onclick="enableVoiceSystem()">🔊 Включить звук</button>
-    </div>
-
     <div id="notification" class="notification hidden"></div>
     <div id="floors" class="floors-grid"></div>
 
@@ -119,27 +123,33 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
     <div class="admin-card">
       <h2>⚙️ Нормы загрузки</h2>
       <p>Норма = сколько гостей может обслуживать 1 сотрудник.</p>
+
       <div class="row red-line"><b>1 этаж</b><input type="number" id="norm1"></div>
       <div class="row yellow-line"><b>2 этаж</b><input type="number" id="norm2"></div>
       <div class="row green-line"><b>3 этаж</b><input type="number" id="norm3"></div>
+
       <button class="save" onclick="saveNorms()">Сохранить нормы</button>
     </div>
 
     <div class="admin-card">
       <h2>🚦 Пороговые значения</h2>
+
       <div class="row yellow-line">
         <div><b>Высокая нагрузка</b><br><small>Нагрузка больше нормы на</small></div>
         <input type="number" id="yellowLimit">
       </div>
+
       <div class="row red-line">
         <div><b>Критичная нагрузка</b><br><small>Нагрузка больше нормы на</small></div>
         <input type="number" id="redLimit">
       </div>
+
       <button class="save" onclick="saveLimits()">Сохранить пороги</button>
     </div>
 
     <div class="admin-card">
       <h2>🔔 Уведомления</h2>
+
       <div class="row blue-line">
         <b>Push-уведомления</b>
         <select id="pushEnabled">
@@ -147,39 +157,27 @@ input,select{padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:1
           <option>Выключено</option>
         </select>
       </div>
+
       <div class="row blue-line">
-        <b>Звуковое оповещение</b>
+        <b>Звуковое/голосовое оповещение</b>
         <select id="soundEnabled">
           <option>Включено</option>
           <option>Выключено</option>
         </select>
       </div>
+
       <button class="save" onclick="requestNotificationPermission()">Разрешить уведомления</button>
       <button class="save" onclick="saveNotificationSettings()">Сохранить уведомления</button>
     </div>
 
     <div class="admin-card">
-      <h2>🔊 Голосовые уведомления</h2>
-      <p>После открытия сайта нажмите один раз «Включить звук». Это нужно из-за правил браузера.</p>
-      <div class="row orange-line">
-        <div>
-          <b>Статус голоса</b><br>
-          <small id="voiceStatusAdmin">Ожидает включения</small>
-        </div>
-        <button class="voice-btn" onclick="enableVoiceSystem()">🔊 Включить звук</button>
-      </div>
-      <button class="voice-btn" onclick="testVoice(1)">▶️ Тест 1 этаж</button>
-      <button class="voice-btn" onclick="testVoice(2)">▶️ Тест 2 этаж</button>
-      <button class="voice-btn" onclick="testVoice(3)">▶️ Тест 3 этаж</button>
-    </div>
-
-    <div class="admin-card">
       <h2>📜 История изменений</h2>
-      <div id="historyList">Пока нет изменений</div>
+      <div id="historyList" class="history-grid"></div>
       <button class="save" onclick="clearHistory()">Очистить историю</button>
     </div>
 
   </div>
+
 </div>
 
 <script type="module">
@@ -202,139 +200,41 @@ const db = getDatabase(app);
 
 let currentPage = "main";
 let lastAlertText = "";
-let voiceQueue = [];
-let isVoicePlaying = false;
-let lastVoiceTime = {};
-let voiceUnlocked = localStorage.getItem("voiceUnlocked") === "true";
-let activeRedFloors = new Set();
-let previousRedFloors = new Set();
 
 let settings = {
-  yellowLimit:1,
-  redLimit:2,
-  pushEnabled:"Включено",
-  soundEnabled:"Включено"
+  yellowLimit: 1,
+  redLimit: 2,
+  pushEnabled: "Включено",
+  soundEnabled: "Включено"
 };
 
 let floors = {
-  1:{staff:4, guests:20, norm:5},
-  2:{staff:2, guests:20, norm:5},
-  3:{staff:6, guests:15, norm:5}
+  1: {staff: 4, guests: 20, norm: 5},
+  2: {staff: 2, guests: 20, norm: 5},
+  3: {staff: 6, guests: 15, norm: 5}
 };
 
 let history = [];
+
+// Голосовые записи должны лежать рядом с index.html:
+// floor1.mp3, floor2.mp3, floor3.mp3
+const floorVoice = {
+  1: new Audio("floor1.mp3"),
+  2: new Audio("floor2.mp3"),
+  3: new Audio("floor3.mp3")
+};
+
+let voiceQueue = [];
+let isVoicePlaying = false;
+let lastVoiceTime = {};
 
 const rootPath = "sergeli_heatmap";
 const floorsRef = ref(db, `${rootPath}/floors`);
 const settingsRef = ref(db, `${rootPath}/settings`);
 const historyRef = ref(db, `${rootPath}/history`);
 
-const voiceFiles = {
-  1: "floor1.mp3",
-  2: "floor2.mp3",
-  3: "floor3.mp3"
-};
-
-const floorVoice = {
-  1: new Audio(voiceFiles[1]),
-  2: new Audio(voiceFiles[2]),
-  3: new Audio(voiceFiles[3])
-};
-
-Object.values(floorVoice).forEach(audio => {
-  audio.preload = "auto";
-});
-
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
-}
-
-function updateVoiceStatus(){
-  const text = voiceUnlocked ? "✅ Голосовые уведомления включены" : "⚠️ Нажмите «Включить звук» один раз";
-  const mainStatus = document.getElementById("voiceStatus");
-  const adminStatus = document.getElementById("voiceStatusAdmin");
-  const panel = document.getElementById("voicePanel");
-
-  if(mainStatus) mainStatus.innerHTML = text;
-  if(adminStatus) adminStatus.innerHTML = text;
-  if(panel && voiceUnlocked) panel.classList.add("hidden");
-}
-
-window.enableVoiceSystem = async function(){
-  try{
-    const audio = floorVoice[1];
-    audio.currentTime = 0;
-    await audio.play();
-
-    setTimeout(() => {
-      audio.pause();
-      audio.currentTime = 0;
-    }, 350);
-
-    voiceUnlocked = true;
-    localStorage.setItem("voiceUnlocked", "true");
-    updateVoiceStatus();
-    alert("Голосовые уведомления включены ✅");
-  }catch(error){
-    alert("Браузер пока не разрешил звук. Нажмите кнопку ещё раз или проверьте, что файлы floor1.mp3, floor2.mp3, floor3.mp3 есть в GitHub.");
-  }
-}
-
-window.testVoice = function(floor){
-  voiceUnlocked = true;
-  localStorage.setItem("voiceUnlocked", "true");
-  updateVoiceStatus();
-  addVoiceToQueue(floor, true);
-}
-
-function addVoiceToQueue(floor, force=false){
-  if(settings.soundEnabled === "Выключено") return;
-  if(!voiceUnlocked && !force) return;
-
-  const now = Date.now();
-  const cooldown = force ? 0 : 2 * 60 * 1000;
-
-  if(!force && lastVoiceTime[floor] && now - lastVoiceTime[floor] < cooldown){
-    return;
-  }
-
-  if(!voiceQueue.includes(floor)){
-    voiceQueue.push(floor);
-  }
-
-  playNextVoice();
-}
-
-function playNextVoice(){
-  if(isVoicePlaying) return;
-  if(voiceQueue.length === 0) return;
-
-  const floor = voiceQueue.shift();
-  const audio = floorVoice[floor];
-
-  if(!audio){
-    playNextVoice();
-    return;
-  }
-
-  Object.values(floorVoice).forEach(a => {
-    a.pause();
-    a.currentTime = 0;
-  });
-
-  isVoicePlaying = true;
-  lastVoiceTime[floor] = Date.now();
-  audio.currentTime = 0;
-
-  audio.play().then(() => {
-    audio.onended = () => {
-      isVoicePlaying = false;
-      setTimeout(playNextVoice, 1500);
-    };
-  }).catch(() => {
-    isVoicePlaying = false;
-    setTimeout(playNextVoice, 1500);
-  });
 }
 
 onValue(floorsRef, snapshot => {
@@ -383,7 +283,6 @@ window.togglePage = function(){
     loadAdmin();
     renderAnalytics();
     renderHistory();
-    updateVoiceStatus();
   }else{
     currentPage = "main";
     admin.classList.add("hidden");
@@ -391,7 +290,6 @@ window.togglePage = function(){
     title.innerHTML = "🔥 Тепловая карта";
     btn.innerHTML = "⚙️ Админ";
     render();
-    updateVoiceStatus();
   }
 }
 
@@ -472,11 +370,51 @@ window.changeValue = async function(floor,type){
   });
 }
 
-function playBeep(){
+function addVoiceToQueue(floor){
   if(settings.soundEnabled === "Выключено") return;
-  if(voiceUnlocked) return;
-  const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-  audio.play().catch(()=>{});
+
+  const now = Date.now();
+  const cooldown = 5 * 60 * 1000; // одно и то же сообщение не повторяется 5 минут
+
+  if(lastVoiceTime[floor] && now - lastVoiceTime[floor] < cooldown){
+    return;
+  }
+
+  if(!voiceQueue.includes(floor)){
+    voiceQueue.push(floor);
+  }
+
+  playNextVoice();
+}
+
+function playNextVoice(){
+  if(isVoicePlaying) return;
+  if(voiceQueue.length === 0) return;
+
+  const floor = voiceQueue.shift();
+  const audio = floorVoice[floor];
+
+  if(!audio) return;
+
+  isVoicePlaying = true;
+  lastVoiceTime[floor] = Date.now();
+
+  Object.values(floorVoice).forEach(item => {
+    item.pause();
+    item.currentTime = 0;
+  });
+
+  audio.currentTime = 0;
+
+  audio.play().catch(() => {
+    isVoicePlaying = false;
+    setTimeout(playNextVoice, 800);
+  });
+
+  audio.onended = () => {
+    isVoicePlaying = false;
+    setTimeout(playNextVoice, 1500);
+  };
 }
 
 function sendPhoneNotification(title, body){
@@ -499,26 +437,9 @@ function sendPhoneNotification(title, body){
   }
 }
 
-function handleVoiceAlerts(redFloors){
-  activeRedFloors = new Set(redFloors.map(item => Number(item.floor)));
-
-  redFloors.forEach(item => {
-    const floor = Number(item.floor);
-    const isNewRed = !previousRedFloors.has(floor);
-
-    if(isNewRed){
-      addVoiceToQueue(floor, false);
-    }
-  });
-
-  previousRedFloors = new Set(activeRedFloors);
-}
-
 function renderNotification(redFloors){
   const notification = document.getElementById("notification");
   const alertCount = document.getElementById("alertCount");
-
-  handleVoiceAlerts(redFloors);
 
   if(redFloors.length === 0){
     notification.classList.add("hidden");
@@ -536,11 +457,14 @@ function renderNotification(redFloors){
   let pushText = "";
 
   redFloors.forEach(item => {
+    addVoiceToQueue(item.floor);
+
     text += `
       🔴 <b>${item.floor} этаж</b> перегружен.<br>
       Гостей: ${item.guests}, сотрудников: ${item.staff}.<br>
       Не хватает: <b>+${item.missing}</b> сотрудник(а).<br><br>
     `;
+
     pushText += `${item.floor} этаж: не хватает +${item.missing}. `;
   });
 
@@ -548,7 +472,6 @@ function renderNotification(redFloors){
   notification.classList.remove("hidden");
 
   if(text !== lastAlertText){
-    playBeep();
     sendPhoneNotification("🚨 Горит этаж!", pushText);
     lastAlertText = text;
   }
@@ -587,6 +510,7 @@ function render(){
             <div class="num">${data.guests}</div>
           </div>
         </div>
+
         <div class="info">
           <h2>Этаж №${i}</h2>
           <p>Нагрузка: ${statusText(status)}</p>
@@ -597,7 +521,6 @@ function render(){
   }
 
   renderNotification(redFloors);
-  updateVoiceStatus();
 }
 
 function loadAdmin(){
@@ -687,33 +610,51 @@ function renderHistory(){
   const list = document.getElementById("historyList");
   if(!list) return;
 
-  if(history.length === 0){
-    list.innerHTML = "Пока нет изменений";
-    return;
-  }
+  const byFloor = {1: [], 2: [], 3: []};
 
-  list.innerHTML = history.slice(0,30).map(h => `
-    <div class="history-item">
-      <b>${h.time}</b><br>
-      Этаж: <b>${h.floor}</b><br>
-      ${h.label}: <b>${h.oldValue}</b> → <b>${h.newValue}</b>
-    </div>
-  `).join("");
+  history.forEach(item => {
+    const floorNumber = Number(item.floor);
+    if(byFloor[floorNumber]){
+      byFloor[floorNumber].push(item);
+    }
+  });
+
+  list.innerHTML = [1,2,3].map(floorNumber => {
+    const items = byFloor[floorNumber].slice(0,30);
+
+    const content = items.length === 0
+      ? `<div class="history-empty">Пока нет изменений</div>`
+      : items.map(h => {
+          const isStaff = h.type === "staff" || h.label === "Сотрудники";
+          const itemClass = isStaff ? "staff" : "guests";
+          const icon = isStaff ? "👤" : "👥";
+          const label = isStaff ? "Сотрудники" : "Гости";
+
+          return `
+            <div class="history-item ${itemClass}">
+              <div class="history-time">🕒 ${h.time || "—"}</div>
+              <div class="history-change">${icon} ${label}</div>
+              <div class="history-values">
+                <b>${h.oldValue ?? "—"}</b> → <b>${h.newValue ?? "—"}</b>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+    return `
+      <section class="history-column floor-${floorNumber}">
+        <h3 class="history-column-title">${floorNumber} этаж</h3>
+        ${content}
+      </section>
+    `;
+  }).join("");
 }
-
 window.clearHistory = async function(){
   if(confirm("Очистить всю историю?")){
     await remove(historyRef);
   }
 }
 
-setInterval(() => {
-  if(settings.soundEnabled === "Выключено") return;
-  if(!voiceUnlocked) return;
-  activeRedFloors.forEach(floor => addVoiceToQueue(floor, false));
-}, 2 * 60 * 1000);
-
-updateVoiceStatus();
 render();
 </script>
 
