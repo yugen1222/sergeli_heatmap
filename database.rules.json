@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "sergeli_heatmap": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
