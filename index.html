@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тепловая карта Сергели</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-title">
+      <span id="pageTitle">🔥 Тепловая карта</span>
+      <span id="alertCount" class="alert-count hidden">0 тревог</span>
+    </div>
+    <div class="header-actions">
+      <button id="voiceUnlockBtn" class="header-btn voice-btn">🔊 Включить голос</button>
+      <button id="toggleBtn" class="header-btn">⚙️ Админ</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="mainPage">
+      <div id="notification" class="notification hidden"></div>
+      <div id="staffRequestPanel"></div>
+      <div id="floors" class="floors-grid"></div>
+      <div class="note">ℹ️ Используйте − и +. Нажмите на число, чтобы ввести значение вручную.</div>
+    </section>
+
+    <section id="adminPage" class="hidden">
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="analyticsTab">📊 Аналитика</button>
+        <button class="tab-btn" data-tab="settingsTab">⚙️ Настройки</button>
+        <button class="tab-btn" data-tab="historyTab">📜 История</button>
+      </div>
+
+      <div id="analyticsTab" class="tab-content active">
+        <div class="admin-card">
+          <h2>📊 Аналитика сейчас</h2>
+          <div class="analytics-grid">
+            <div class="stat">🔴 Критичных этажей <b id="redCount">0</b></div>
+            <div class="stat">🟡 Высокая нагрузка <b id="yellowCount">0</b></div>
+            <div class="stat">👥 Гостей сейчас <b id="totalGuests">0</b></div>
+            <div class="stat">🧑‍💼 Сотрудников сейчас <b id="totalStaff">0</b></div>
+            <div class="stat">🏆 Самый загруженный этаж <b id="topFloor">—</b></div>
+            <div class="stat">🚨 Активных запросов <b id="activeRequests">0</b></div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h2>📈 Нагрузка по этажам</h2>
+          <div id="loadBars" class="load-bars"></div>
+        </div>
+      </div>
+
+      <div id="settingsTab" class="tab-content">
+        <div class="admin-card">
+          <h2>⚙️ Нормы загрузки</h2>
+          <p>Норма — сколько гостей может обслуживать один сотрудник.</p>
+          <div class="row red-line"><b>1 этаж</b><input type="number" min="1" id="norm1"></div>
+          <div class="row yellow-line"><b>2 этаж</b><input type="number" min="1" id="norm2"></div>
+          <div class="row green-line"><b>3 этаж</b><input type="number" min="1" id="norm3"></div>
+          <button id="saveNormsBtn" class="save">Сохранить нормы</button>
+        </div>
+
+        <div class="admin-card">
+          <h2>🚦 Пороговые значения</h2>
+          <div class="row yellow-line">
+            <div><b>Высокая нагрузка</b><br><small>Превышение нормы на</small></div>
+            <input type="number" min="0" step="0.1" id="yellowLimit">
+          </div>
+          <div class="row red-line">
+            <div><b>Критичная нагрузка</b><br><small>Превышение нормы на</small></div>
+            <input type="number" min="0" step="0.1" id="redLimit">
+          </div>
+          <button id="saveLimitsBtn" class="save">Сохранить пороги</button>
+        </div>
+
+        <div class="admin-card">
+          <h2>🔔 Уведомления и звук</h2>
+          <div class="row blue-line">
+            <b>Push-уведомления</b>
+            <select id="pushEnabled"><option>Включено</option><option>Выключено</option></select>
+          </div>
+          <div class="row blue-line">
+            <b>Голосовые уведомления</b>
+            <select id="soundEnabled"><option>Включено</option><option>Выключено</option></select>
+          </div>
+          <div class="row blue-line">
+            <b>Повтор голоса</b>
+            <select id="voiceCooldown">
+              <option value="60000">1 минута</option>
+              <option value="120000">2 минуты</option>
+              <option value="300000">5 минут</option>
+            </select>
+          </div>
+          <button id="permissionBtn" class="save">Разрешить уведомления</button>
+          <button id="saveNotificationsBtn" class="save">Сохранить настройки</button>
+          <div class="test-buttons">
+            <button class="secondary testVoiceBtn" data-floor="1">▶ Тест 1 этаж</button>
+            <button class="secondary testVoiceBtn" data-floor="2">▶ Тест 2 этаж</button>
+            <button class="secondary testVoiceBtn" data-floor="3">▶ Тест 3 этаж</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="historyTab" class="tab-content">
+        <div class="admin-card">
+          <div class="history-head">
+            <h2>📜 История изменений</h2>
+            <button id="clearHistoryBtn" class="danger-btn">Очистить историю</button>
+          </div>
+          <div id="historyColumns" class="history-columns"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
