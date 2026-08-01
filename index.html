@@ -236,7 +236,6 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getDatabase(firebaseApp);
 const messagingReady = isSupported().then(ok => ok ? getMessaging(firebaseApp) : null);
-import { getToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 const ROOT="sergeli_heatmap";
 const VAPID_KEY="PASTE_YOUR_PUBLIC_VAPID_KEY_HERE";
